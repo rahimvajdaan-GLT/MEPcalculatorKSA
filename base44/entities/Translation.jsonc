@@ -1,0 +1,38 @@
+{
+  "name": "Translation",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Translation key (e.g., 'nav.home', 'common.calculate')"
+    },
+    "ar": {
+      "type": "string",
+      "description": "Arabic translation text"
+    },
+    "en": {
+      "type": "string",
+      "description": "English translation text"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "nav",
+        "common",
+        "calculators",
+        "trades",
+        "footer",
+        "disclaimer",
+        "standards",
+        "privacy",
+        "terms"
+      ],
+      "description": "Translation category for organization"
+    }
+  },
+  "required": [
+    "key",
+    "ar",
+    "en"
+  ]
+}

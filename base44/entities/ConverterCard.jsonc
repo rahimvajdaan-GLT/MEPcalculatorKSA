@@ -1,0 +1,63 @@
+{
+  "name": "ConverterCard",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL slug"
+    },
+    "titleEn": {
+      "type": "string",
+      "description": "English title"
+    },
+    "titleAr": {
+      "type": "string",
+      "description": "Arabic title"
+    },
+    "dimensionKey": {
+      "type": "string",
+      "description": "Reference to UnitDimension key"
+    },
+    "defaultFromUnitKey": {
+      "type": "string",
+      "description": "Default 'from' unit key"
+    },
+    "defaultToUnitKey": {
+      "type": "string",
+      "description": "Default 'to' unit key"
+    },
+    "keywordsEn": {
+      "type": "string",
+      "description": "Search keywords in English"
+    },
+    "keywordsAr": {
+      "type": "string",
+      "description": "Search keywords in Arabic"
+    },
+    "descEn": {
+      "type": "string",
+      "description": "Short description in English"
+    },
+    "descAr": {
+      "type": "string",
+      "description": "Short description in Arabic"
+    },
+    "isSpecial": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for electrical mini calculators"
+    },
+    "displayOrder": {
+      "type": "number",
+      "description": "Sort order"
+    }
+  },
+  "required": [
+    "slug",
+    "titleEn",
+    "titleAr",
+    "dimensionKey",
+    "defaultFromUnitKey",
+    "defaultToUnitKey"
+  ]
+}

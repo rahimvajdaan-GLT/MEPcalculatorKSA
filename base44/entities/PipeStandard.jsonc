@@ -1,0 +1,31 @@
+{
+  "name": "PipeStandard",
+  "type": "object",
+  "properties": {
+    "standardKey": {
+      "type": "string",
+      "description": "Unique identifier (e.g., SCH40, SCH80)"
+    },
+    "nameEn": {
+      "type": "string",
+      "description": "Standard name in English"
+    },
+    "nameAr": {
+      "type": "string",
+      "description": "Standard name in Arabic"
+    },
+    "notesEn": {
+      "type": "string",
+      "description": "Notes in English"
+    },
+    "notesAr": {
+      "type": "string",
+      "description": "Notes in Arabic"
+    }
+  },
+  "required": [
+    "standardKey",
+    "nameEn",
+    "nameAr"
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "name": "EngineeringGuide",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier (e.g., how-to-size-hvac-ducts)"
+    },
+    "trade": {
+      "type": "string",
+      "enum": [
+        "hvac",
+        "plumbing",
+        "firefighting",
+        "electrical",
+        "general"
+      ],
+      "description": "Associated MEP trade"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft",
+      "description": "Publication status"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Article title in English"
+    },
+    "title_ar": {
+      "type": "string",
+      "description": "Article title in Arabic"
+    },
+    "meta_title_en": {
+      "type": "string",
+      "description": "SEO meta title in English"
+    },
+    "meta_title_ar": {
+      "type": "string",
+      "description": "SEO meta title in Arabic"
+    },
+    "meta_desc_en": {
+      "type": "string",
+      "description": "SEO meta description in English (max 160 chars)"
+    },
+    "meta_desc_ar": {
+      "type": "string",
+      "description": "SEO meta description in Arabic (max 160 chars)"
+    },
+    "h1_en": {
+      "type": "string",
+      "description": "H1 heading in English"
+    },
+    "h1_ar": {
+      "type": "string",
+      "description": "H1 heading in Arabic"
+    },
+    "intro_en": {
+      "type": "string",
+      "description": "Short introductory paragraph in English"
+    },
+    "intro_ar": {
+      "type": "string",
+      "description": "Short introductory paragraph in Arabic"
+    },
+    "body_en": {
+      "type": "string",
+      "description": "Full long-form article body in English (Markdown supported)"
+    },
+    "body_ar": {
+      "type": "string",
+      "description": "Full long-form article body in Arabic (Markdown supported)"
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_en": {
+            "type": "string"
+          },
+          "question_ar": {
+            "type": "string"
+          },
+          "answer_en": {
+            "type": "string"
+          },
+          "answer_ar": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "FAQ items for FAQPage JSON-LD schema"
+    },
+    "relatedCalculators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Slugs of related calculator tools for internal linking"
+    },
+    "relatedGuides": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Slugs of related engineering guides for internal linking"
+    },
+    "coverImage": {
+      "type": "string",
+      "description": "URL of the cover image"
+    },
+    "readingTimeMinutes": {
+      "type": "number",
+      "description": "Estimated reading time in minutes"
+    },
+    "displayOrder": {
+      "type": "number",
+      "description": "Sort order on listing page"
+    }
+  },
+  "required": [
+    "slug",
+    "trade",
+    "title_en",
+    "title_ar",
+    "meta_desc_en",
+    "meta_desc_ar",
+    "body_en",
+    "body_ar"
+  ]
+}

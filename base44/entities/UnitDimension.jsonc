@@ -1,0 +1,36 @@
+{
+  "name": "UnitDimension",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key (e.g., flow, pressure, length)"
+    },
+    "nameEn": {
+      "type": "string",
+      "description": "English name"
+    },
+    "nameAr": {
+      "type": "string",
+      "description": "Arabic name"
+    },
+    "baseUnitKey": {
+      "type": "string",
+      "description": "Key of the base unit for this dimension"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier"
+    },
+    "displayOrder": {
+      "type": "number",
+      "description": "Sort order"
+    }
+  },
+  "required": [
+    "key",
+    "nameEn",
+    "nameAr",
+    "baseUnitKey"
+  ]
+}

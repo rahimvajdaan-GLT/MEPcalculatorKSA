@@ -1,0 +1,49 @@
+{
+  "name": "CalculationRun",
+  "type": "object",
+  "properties": {
+    "calculatorSlug": {
+      "type": "string",
+      "description": "Calculator identifier"
+    },
+    "calculatorVersion": {
+      "type": "string",
+      "description": "Calculator version used for this calculation"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "ar",
+        "en"
+      ]
+    },
+    "unitsMode": {
+      "type": "string",
+      "enum": [
+        "metric",
+        "imperial"
+      ],
+      "default": "metric"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "User input values"
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Calculated results"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Validation warnings"
+    }
+  },
+  "required": [
+    "calculatorSlug",
+    "inputs",
+    "outputs"
+  ]
+}

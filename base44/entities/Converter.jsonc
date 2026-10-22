@@ -1,0 +1,165 @@
+{
+  "name": "Converter",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL slug (e.g., bar-to-psi)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "pressure",
+        "flow",
+        "length",
+        "temperature",
+        "power",
+        "electrical"
+      ],
+      "description": "Converter category"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Page title in English"
+    },
+    "title_ar": {
+      "type": "string",
+      "description": "Page title in Arabic"
+    },
+    "meta_title_en": {
+      "type": "string",
+      "description": "SEO meta title in English"
+    },
+    "meta_desc_en": {
+      "type": "string",
+      "description": "SEO meta description in English"
+    },
+    "meta_title_ar": {
+      "type": "string",
+      "description": "SEO meta title in Arabic"
+    },
+    "meta_desc_ar": {
+      "type": "string",
+      "description": "SEO meta description in Arabic"
+    },
+    "h1_en": {
+      "type": "string",
+      "description": "H1 heading in English"
+    },
+    "h1_ar": {
+      "type": "string",
+      "description": "H1 heading in Arabic"
+    },
+    "intro_en": {
+      "type": "string",
+      "description": "Introduction text in English"
+    },
+    "intro_ar": {
+      "type": "string",
+      "description": "Introduction text in Arabic"
+    },
+    "from_unit": {
+      "type": "string",
+      "description": "Source unit (e.g., bar)"
+    },
+    "to_unit": {
+      "type": "string",
+      "description": "Target unit (e.g., psi)"
+    },
+    "factor": {
+      "type": "number",
+      "description": "Conversion factor"
+    },
+    "offset": {
+      "type": "number",
+      "default": 0,
+      "description": "Conversion offset (for temperature)"
+    },
+    "note_en": {
+      "type": "string",
+      "description": "Note text in English"
+    },
+    "note_ar": {
+      "type": "string",
+      "description": "Note text in Arabic"
+    },
+    "formula_en": {
+      "type": "string",
+      "description": "Formula explanation in English"
+    },
+    "formula_ar": {
+      "type": "string",
+      "description": "Formula explanation in Arabic"
+    },
+    "examples_en": {
+      "type": "string",
+      "description": "Examples text in English"
+    },
+    "examples_ar": {
+      "type": "string",
+      "description": "Examples text in Arabic"
+    },
+    "common_rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number"
+          },
+          "to": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Common conversion table rows"
+    },
+    "faq_en": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "FAQ items in English"
+    },
+    "faq_ar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "FAQ items in Arabic"
+    },
+    "schema_faq_en": {
+      "type": "string",
+      "description": "JSON-LD FAQ schema in English"
+    },
+    "schema_faq_ar": {
+      "type": "string",
+      "description": "JSON-LD FAQ schema in Arabic"
+    }
+  },
+  "required": [
+    "slug",
+    "category",
+    "title_en",
+    "title_ar",
+    "from_unit",
+    "to_unit",
+    "factor"
+  ]
+}

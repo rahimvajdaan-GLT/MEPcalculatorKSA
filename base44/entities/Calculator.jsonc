@@ -1,0 +1,91 @@
+{
+  "name": "Calculator",
+  "type": "object",
+  "properties": {
+    "trade": {
+      "type": "string",
+      "enum": [
+        "hvac",
+        "plumbing",
+        "firefighting"
+      ],
+      "description": "MEP trade category"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier (e.g., duct-sizing)"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "ar",
+        "en"
+      ],
+      "description": "Language code"
+    },
+    "title": {
+      "type": "string",
+      "description": "Calculator title in respective language"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short meta description for SEO"
+    },
+    "introContent": {
+      "type": "string",
+      "description": "Long SEO content (800-1500 words)"
+    },
+    "inputsSchema": {
+      "type": "object",
+      "description": "JSON schema defining calculator inputs"
+    },
+    "defaults": {
+      "type": "object",
+      "description": "Default values for inputs"
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "FAQ items for the calculator"
+    },
+    "workedExample": {
+      "type": "object",
+      "description": "Sample inputs and outputs for demonstration"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of assumptions and limits"
+    },
+    "relatedCalculators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Slugs of related calculators"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0",
+      "description": "Calculator version"
+    }
+  },
+  "required": [
+    "trade",
+    "slug",
+    "language",
+    "title"
+  ]
+}

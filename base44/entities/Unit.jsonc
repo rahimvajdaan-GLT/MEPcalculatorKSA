@@ -1,0 +1,47 @@
+{
+  "name": "Unit",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key (e.g., lmin, bar, psi)"
+    },
+    "dimensionKey": {
+      "type": "string",
+      "description": "Reference to UnitDimension key"
+    },
+    "nameEn": {
+      "type": "string",
+      "description": "English name"
+    },
+    "nameAr": {
+      "type": "string",
+      "description": "Arabic name"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Unit symbol (e.g., L/min, bar, psi)"
+    },
+    "factorToBase": {
+      "type": "number",
+      "description": "Multiplication factor to convert to base unit"
+    },
+    "offsetToBase": {
+      "type": "number",
+      "default": 0,
+      "description": "Offset for affine conversions (e.g., temperature)"
+    },
+    "displayOrder": {
+      "type": "number",
+      "description": "Sort order within dimension"
+    }
+  },
+  "required": [
+    "key",
+    "dimensionKey",
+    "nameEn",
+    "nameAr",
+    "symbol",
+    "factorToBase"
+  ]
+}

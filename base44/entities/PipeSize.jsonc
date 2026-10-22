@@ -1,0 +1,36 @@
+{
+  "name": "PipeSize",
+  "type": "object",
+  "properties": {
+    "standardKey": {
+      "type": "string",
+      "description": "Reference to PipeStandard"
+    },
+    "nominalInch": {
+      "type": "string",
+      "description": "Nominal size (e.g., 2, 2 1/2)"
+    },
+    "insideDiameter_mm": {
+      "type": "number",
+      "description": "Inside diameter in millimeters"
+    },
+    "outsideDiameter_in": {
+      "type": "number",
+      "description": "Outside diameter in inches (optional)"
+    },
+    "minWall_in": {
+      "type": "number",
+      "description": "Minimum wall thickness in inches (optional)"
+    },
+    "displayOrder": {
+      "type": "number",
+      "description": "Sort order for display"
+    }
+  },
+  "required": [
+    "standardKey",
+    "nominalInch",
+    "insideDiameter_mm",
+    "displayOrder"
+  ]
+}
