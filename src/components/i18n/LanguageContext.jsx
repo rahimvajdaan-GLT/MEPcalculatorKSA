@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { getTranslation } from './translations';
 import { useQuery } from '@tanstack/react-query';
 
 const LanguageContext = createContext();
@@ -60,6 +61,8 @@ export const LanguageProvider = ({ children }) => {
 
   // Translation function
   const t = (key) => {
+    const local = getTranslation(language, key);
+    if (typeof local === 'string' && local !== key) return local;
     if (isLoading || !translationsData) return key;
     
     const keys = key.split('.');
