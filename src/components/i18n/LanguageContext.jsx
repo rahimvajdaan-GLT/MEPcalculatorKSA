@@ -1,7 +1,8 @@
+import { getCalculatorConfig } from '../calculators/engines';
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { getTranslation } from './translations';
-import { useQuery } from '@tanstack/react-query';
+
+import { translations, getTranslation } from './translations';
+
 
 const LanguageContext = createContext();
 
@@ -9,29 +10,8 @@ export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState('ar');
   const [isRTL, setIsRTL] = useState(true);
 
-  // Fetch translations from database
-  const { data: translationsData, isLoading } = useQuery({
-    queryKey: ['translations'],
-    queryFn: async () => {
-      const data = await base44.entities.Translation.list();
-      // Convert array to nested object structure
-      const nested = {};
-      data.forEach(item => {
-        const keys = item.key.split('.');
-        let current = nested;
-        keys.forEach((key, index) => {
-          if (index === keys.length - 1) {
-            current[key] = { ar: item.ar, en: item.en };
-          } else {
-            current[key] = current[key] || {};
-            current = current[key];
-          }
-        });
-      });
-      return nested;
-    },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
+  const translationsData = translations[language];
+  const isLoading = false;
 
   useEffect(() => {
     // Detect language from URL query param
@@ -59,24 +39,27 @@ export const LanguageProvider = ({ children }) => {
     window.location.href = currentUrl.toString();
   };
 
-  // Translation function
   const t = (key) => {
-    const local = getTranslation(language, key);
-    if (typeof local === 'string' && local !== key) return local;
-    if (isLoading || !translationsData) return key;
-    
-    const keys = key.split('.');
-    let value = translationsData;
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return key; // Return key if not found
-      }
+    const value = getTranslation(language, key);
+    if (typeof value === 'string' && value !== key) return value;
+
+    const match = key.match(/^calculators\.(.+)\.(title|shortDesc)$/);
+    if (match) {
+      const config = getCalculatorConfig(match[1], language);
+      const label = match[2] === 'title'
+        ? config?.title : config?.description;
+      if (label) return label;
     }
-    
-    return value?.[language] || key;
+
+    if (key === 'trades.electrical.title')
+      return language === 'ar' ? 'حاسبات الكهرباء' : 'Electrical Calculators';
+
+    if (key === 'trades.electrical.description')
+      return language === 'ar'
+        ? 'حاسبات كهربائية للمشاريع السعودية'
+        : 'Electrical engineering calculators';
+
+    return key.split('.').pop().replace(/[-_]/g, ' ');
   };
 
   return (

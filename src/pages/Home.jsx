@@ -1,3 +1,4 @@
+import { getCalculatorConfig } from '../components/calculators/engines';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -223,7 +224,7 @@ export default function Home() {
                               <Icon className="w-5 h-5 text-white" />
                             </div>
                             <h4 className="font-semibold text-slate-900 group-hover:text-pink-600 transition-colors">
-                              {t(`calculators.${slug}.title`)}
+                              {(getCalculatorConfig(slug, language)?.title || t(`calculators.${slug}.title`))}
                             </h4>
                           </CardContent>
                         </Card>
@@ -265,7 +266,7 @@ export default function Home() {
                               <Icon className="w-5 h-5 text-white" />
                             </div>
                             <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                              {t(`calculators.${slug}.title`)}
+                              {(getCalculatorConfig(slug, language)?.title || t(`calculators.${slug}.title`))}
                             </h4>
                           </CardContent>
                         </Card>
@@ -341,10 +342,10 @@ export default function Home() {
                               <Calculator className={`w-5 h-5 ${colors.text} group-hover:text-white transition-colors`} />
                             </div>
                             <h4 className="font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors mb-1">
-                              {t(`calculators.${slug}.title`)}
+                              {(getCalculatorConfig(slug, language)?.title || t(`calculators.${slug}.title`))}
                             </h4>
                             <p className="text-sm text-slate-500 line-clamp-2">
-                              {t(`calculators.${slug}.shortDesc`)}
+                              {(getCalculatorConfig(slug, language)?.description || t(`calculators.${slug}.shortDesc`))}
                             </p>
                           </CardContent>
                         </Card>

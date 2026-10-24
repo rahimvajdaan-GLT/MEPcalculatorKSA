@@ -1,3 +1,4 @@
+import { getCalculatorConfig } from './engines';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -12,8 +13,8 @@ export default function CalculatorCard({ slug, trade, icon: Icon }) {
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
   const { isFavorite, toggleFavorite } = useFavorites();
   
-  const title = t(`calculators.${slug}.title`);
-  const shortDesc = t(`calculators.${slug}.shortDesc`);
+  const title = getCalculatorConfig(slug, language)?.title || t(`calculators.${slug}.title`);
+  const shortDesc = getCalculatorConfig(slug, language)?.description || t(`calculators.${slug}.shortDesc`);
   const favorite = isFavorite(slug);
 
   const handleFavoriteClick = (e) => {
