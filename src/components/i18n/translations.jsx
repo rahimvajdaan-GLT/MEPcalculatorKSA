@@ -1,3 +1,4 @@
+import { calculatorRegistry, getCalculatorConfig } from '../calculators/engines';
 export const translations = {
   ar: {
     // Navigation
@@ -266,6 +267,36 @@ export const translations = {
     }
   }
 };
+
+
+// Complete missing local translations from calculator configurations.
+for (const lang of ['ar', 'en']) {
+  translations[lang].trades.electrical = lang === 'ar'
+    ? {
+        title: 'حاسبات الكهرباء',
+        description: 'حاسبات هندسية للأنظمة الكهربائية'
+      }
+    : {
+        title: 'Electrical Calculators',
+        description: 'Engineering tools for electrical systems'
+      };
+
+  for (const trade of Object.values(translations[lang].trades)) {
+    if (!trade.cardDesc) trade.cardDesc = trade.description;
+  }
+
+  for (const slug of Object.keys(calculatorRegistry)) {
+    const config = getCalculatorConfig(slug, lang);
+    if (!config) continue;
+
+    const existing = translations[lang].calculators[slug] || {};
+
+    translations[lang].calculators[slug] = {
+      title: existing.title || config.title,
+      shortDesc: existing.shortDesc || config.description || config.title
+    };
+  }
+}
 
 export const getTranslation = (lang, key) => {
   const keys = key.split('.');
