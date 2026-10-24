@@ -1,17 +1,24 @@
-name: Daily website and SEO audit
+name: Autonomous Website Manager and AI SEO Builder
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 5 * * *' # 08:17 Saudi Arabia time (UTC+03)
+    - cron: '17 5 * * *'
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
+
+concurrency:
+  group: mep-website-manager
+  cancel-in-progress: false
 
 jobs:
-  audit:
+  manager:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,14 +30,45 @@ jobs:
           npm ci
           npm install --no-save --package-lock=false playwright
           npx playwright install --with-deps chromium
-      - name: Check live pages, translations, SEO and sitemap
+      - name: Safely repair sitemap
+        run: |
+          python3 agent/generate-sitemap.py
+          if ! git diff --quiet -- public/sitemap.xml; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/sitemap.xml
+            git commit -m "chore: automatically refresh sitemap"
+            git push origin HEAD:main
+          fi
+      - name: Check website build
+        id: build
+        continue-on-error: true
+        run: npm run build
+      - name: Run website maintenance audit
+        id: audit
+        continue-on-error: true
         env:
-          SITE_URL: https://mepcalculatorsksa.org
-        run: node agent/daily-website-seo.mjs
-      - uses: actions/upload-artifact@v4
+          BUILD_RESULT: ${{ steps.build.outcome }}
+        run: node agent/autonomous-manager.mjs
+      - name: Generate AI SEO plan
         if: always()
+        run: |
+          if [ -f agent-report.json ]; then
+            node agent/ai-seo-builder.mjs
+          fi
+      - name: Save daily reports
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: daily-website-seo-report
-          path: agent-report.md
-          if-no-files-found: ignore
+          name: website-manager-report
+          path: |
+            agent-report.md
+            agent-report.json
+            agent-ai-plan.md
           retention-days: 30
+      - name: Flag confirmed failures
+        if: always()
+        run: |
+          if [[ "${{ steps.build.outcome }}" == "failure" || "${{ steps.audit.outcome }}" == "failure" ]]; then
+            exit 1
+          fi
