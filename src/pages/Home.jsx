@@ -68,7 +68,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div dir={isRTL ? "rtl" : "ltr"} className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white">
         <div className="absolute inset-0 opacity-20 hidden md:block">
@@ -91,16 +91,16 @@ export default function Home() {
             </Badge>
 
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-              {language === 'ar' ? 'حاسبات MEP لمشاريع السعودية' : 'MEP Calculator'}
+              {language === 'ar' ? 'حاسبات MEP للمشاريع السعودية' : 'MEP Calculator'}
             </h1>
 
             <p className="text-base sm:text-lg text-slate-200 mb-3 sm:mb-4 leading-relaxed">
-              {language === 'ar' ? 'حاسبات MEP سريعة لمشاريع السعودية.' : 'Fast MEP sizing calculators for Saudi projects.'}
+              {language === 'ar' ? 'أدوات هندسية دقيقة وسريعة للمشاريع في السعودية.' : 'Fast MEP sizing calculators for Saudi projects.'}
             </p>
 
             <p className="text-sm sm:text-base text-slate-300 mb-6 sm:mb-8 leading-relaxed">
               {language === 'ar' 
-                ? 'توفر منصة MEP Calc KSA حاسبات سريعة وعملية لأعمال التكييف HVAC والسباكة Plumbing ومكافحة الحريق Firefighting والكهرباء Electrical المستخدمة في مشاريع السعودية. تشمل الأدوات حساب مقاس الدكت، مقاس مواسير المياه المبردة، هيد المضخة، فاقد الاحتكاك Hazen-Williams، هبوط الجهد، اختيار مقاس الكابل، واختيار القواطع. الموقع ثنائي اللغة (عربي + إنجليزي) ومتوافق مع الجوال، مع أمثلة واضحة وافتراضات محددة لدعم التحقق الهندسي والتنسيق بالموقع.'
+                ? 'تقدم منصة حاسبات MEP أدوات هندسية عملية للمهندسين في المملكة العربية السعودية، تشمل حسابات التكييف والتهوية، وشبكات المياه والصرف، وأنظمة مكافحة الحريق، والأعمال الكهربائية. تساعدك الأدوات على حساب أبعاد مجاري الهواء، ومقاسات الأنابيب، وفاقد الضغط، وهبوط الجهد، واختيار الكابلات والقواطع. تتوفر الحاسبات بالعربية والإنجليزية، مع أمثلة تطبيقية وافتراضات واضحة لدعم مراجعة التصميم والتنسيق الهندسي.'
                 : 'MEP Calc KSA provides fast, practical calculators for HVAC, Plumbing, Firefighting, and Electrical works used in Saudi projects. Use tools like duct sizing, chilled water pipe sizing, pump head loss, Hazen-Williams friction loss, voltage drop, cable sizing, and breaker sizing. The site is bilingual (Arabic + English), mobile-friendly, and includes worked examples and clear assumptions to support engineering checks and site coordination.'}
             </p>
 
