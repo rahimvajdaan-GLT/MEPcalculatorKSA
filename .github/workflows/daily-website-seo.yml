@@ -1,0 +1,36 @@
+name: Daily website and SEO audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *' # 08:17 Saudi Arabia time (UTC+03)
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Check live pages, translations, SEO and sitemap
+        env:
+          SITE_URL: https://mepcalculatorsksa.org
+        run: node agent/daily-website-seo.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daily-website-seo-report
+          path: agent-report.md
+          if-no-files-found: ignore
+          retention-days: 30
