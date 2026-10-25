@@ -125,17 +125,6 @@ export default function CalculatorPage() {
       if (!twitterDesc) { twitterDesc = document.createElement('meta'); twitterDesc.name = 'twitter:description'; document.head.appendChild(twitterDesc); }
       twitterDesc.content = pageDescription;
 
-      let canonical = document.querySelector('link[rel="canonical"]');
-      if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
-      canonical.href = window.location.href;
-
-      let alternateLang = language === 'ar' ? 'en' : 'ar';
-      let alternateUrl = new URL(window.location.href);
-      alternateUrl.searchParams.set('lang', alternateLang);
-      let alternate = document.querySelector(`link[hreflang="${alternateLang}"]`);
-      if (!alternate) { alternate = document.createElement('link'); alternate.rel = 'alternate'; alternate.hreflang = alternateLang; document.head.appendChild(alternate); }
-      alternate.href = alternateUrl.toString();
-
       let structuredData = document.getElementById('calculator-structured-data');
       if (!structuredData) { structuredData = document.createElement('script'); structuredData.id = 'calculator-structured-data'; structuredData.type = 'application/ld+json'; document.head.appendChild(structuredData); }
       structuredData.textContent = JSON.stringify({
