@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { LanguageProvider } from './components/i18n/LanguageContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import DisclaimerBanner from './components/layout/DisclaimerBanner';
+import { applySeoMetadata, buildSeoUrls } from './lib/seoUrls';
 
 export default function Layout({ children, currentPageName }) {
+  const location = useLocation();
+
   // Set initial language from URL or default to Arabic
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const lang = params.get('lang') || 'ar';
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
@@ -17,15 +21,7 @@ export default function Layout({ children, currentPageName }) {
       ? 'حاسبة MEP'
       : 'MEP Calculator';
 
-    // Set per-page canonical URL (production domain + current path)
-    const canonicalUrl = `https://mepcalculatorsksa.org${window.location.pathname}`;
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      document.head.appendChild(canonical);
-    }
-    canonical.href = canonicalUrl;
+    applySeoMetadata(document, buildSeoUrls(location.pathname, location.search));
 
     // Add Google Analytics
     if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
@@ -41,7 +37,7 @@ export default function Layout({ children, currentPageName }) {
         gtag('config', 'G-9CJ09RZMSS');
       };
     }
-  }, [currentPageName]);
+  }, [currentPageName, location.pathname, location.search]);
 
   // Determine trade from URL for disclaimer
   const params = new URLSearchParams(window.location.search);
