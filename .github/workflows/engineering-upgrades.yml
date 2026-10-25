@@ -30,11 +30,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node agent/calculation-regression.mjs
+      - name: Prepare restricted Codex user
+        run: |
+          sudo adduser --system --home /home/guest --shell /bin/bash --group guest
+          sudo usermod -a -G guest runner
+          sudo usermod -a -G runner guest
+          sudo chown -R runner:guest "$GITHUB_WORKSPACE"
+          sudo chmod -R g+rwX "$GITHUB_WORKSPACE"
+          sudo find "$GITHUB_WORKSPACE" -type d -exec chmod g+s {} +
+
       - name: AI Engineering Developer
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
+          safety-strategy: unprivileged-user
+          codex-user: guest
           prompt-file: agent/engineering-upgrades.md
       - name: Validate and capture changes
         id: patch
