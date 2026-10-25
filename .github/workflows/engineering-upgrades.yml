@@ -1,0 +1,105 @@
+name: AI Engineering Upgrades
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-engineering-upgrades
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    outputs:
+      has_patch: ${{ steps.patch.outputs.has_patch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node agent/calculation-regression.mjs
+      - name: AI Engineering Developer
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          prompt-file: agent/engineering-upgrades.md
+      - name: Validate and capture changes
+        id: patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -N .
+          git diff --binary HEAD > engineering.patch
+          if [[ ! -s engineering.patch ]]; then
+            echo 'has_patch=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          while IFS= read -r file; do
+            case "$file" in
+              src/pages/*|src/components/*|tests/*|docs/engineering-proposals/*) ;;
+              *) echo "Protected file: $file"; exit 1 ;;
+            esac
+          done < <(git diff --name-only HEAD)
+          node agent/calculation-regression.mjs
+          npm run build
+          echo 'has_patch=true' >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.patch.outputs.has_patch == 'true'
+        with:
+          name: engineering-proposal-patch
+          path: engineering.patch
+
+  pull_request:
+    needs: draft
+    if: needs.draft.outputs.has_patch == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/download-artifact@v4
+        with:
+          name: engineering-proposal-patch
+      - name: Apply proposed changes
+        run: |
+          git apply --check engineering.patch
+          git apply --index engineering.patch
+      - run: npm ci
+      - run: node agent/calculation-regression.mjs
+      - run: npm run build
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bot/engineering-upgrades
+          draft: true
+          title: 'AI Engineering Improvements - Review Required'
+          body: |
+            AI-generated engineering proposal.
+            Engineer review is required for formula, limits,
+            standards, calculations and assumptions.
+            Automated tests do not establish code compliance.
+          commit-message: 'proposal: AI engineering improvements'
+          add-paths: |
+            src/pages
+            src/components
+            tests
+            docs/engineering-proposals
