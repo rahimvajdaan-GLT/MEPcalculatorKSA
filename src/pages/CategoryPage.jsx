@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { useLanguage } from '../components/i18n/LanguageContext';
 import Breadcrumbs from '../components/layout/Breadcrumbs';
 import CalculatorCard from '../components/calculators/CalculatorCard';
+import { calculatorRegistry } from '../components/calculators/engines';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Wind, Droplets, Flame, Calculator, ArrowLeft, ArrowRight, Cpu } from 'lucide-react';
@@ -40,7 +41,7 @@ export default function CategoryPage() {
   
   const Icon = tradeIcons[trade] || Wind;
   const colors = tradeColors[trade] || tradeColors.hvac;
-  const calculators = calculatorsByTrade[trade] || [];
+  const calculators = Object.keys(calculatorRegistry).filter(slug => calculatorRegistry[slug].trade === trade);
 
   useEffect(() => {
     const lang = params.get('lang');
@@ -173,7 +174,7 @@ export default function CategoryPage() {
                             {t(`trades.${tradeKey}.title`)}
                           </h3>
                           <p className="text-sm text-slate-500">
-                            {calculatorsByTrade[tradeKey].length} {language === 'ar' ? 'حاسبة' : 'calculators'}
+                            {Object.values(calculatorRegistry).filter(item => item.trade === tradeKey).length} {language === 'ar' ? 'حاسبة' : 'calculators'}
                           </p>
                         </div>
                         <Arrow className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 transition-colors" />
