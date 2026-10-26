@@ -19,8 +19,11 @@ import { shortCircuitConfig, calculateShortCircuitResults, shortCircuitDefaults,
 import { transformerSizingConfig, calculateTransformerSizingResults, transformerSizingDefaults, transformerSizingRelated } from './transformerSizing';
 import { loadScheduleConfig, calculateLoadSchedule, loadScheduleDefaults, loadScheduleRelated } from './loadSchedule';
 
+import { essentialCalculatorRegistry } from './essentialCalculators';
+
 // Calculator registry
 export const calculatorRegistry = {
+  ...essentialCalculatorRegistry,
   'duct-sizing': {
     config: ductSizingConfig,
     calculate: calculateDuctSizing,
