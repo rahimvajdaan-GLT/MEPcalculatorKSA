@@ -508,7 +508,9 @@ const formulas = {
     return {capacityKw:u==='imperial'?kw*3412.142:kw,capacityTr:kw/3.51685284};
   },
   'chilled-water-cooling-capacity': (i,u) => {
-    const kw=u==='imperial'?500*i.flow*i.deltaT/3412.142:4.186*i.flow*i.deltaT;
+    const flowLs = u==='imperial' ? i.flow*0.0630901964 : i.flow;
+    const deltaC = u==='imperial' ? i.deltaT*5/9 : i.deltaT;
+    const kw = 4.186*flowLs*deltaC;
     return {capacityKw:u==='imperial'?kw*3412.142:kw,capacityTr:kw/3.51685284};
   },
   'pump-hydraulic-power': (i,u) => {
