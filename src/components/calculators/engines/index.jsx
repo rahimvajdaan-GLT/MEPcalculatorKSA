@@ -20,10 +20,12 @@ import { transformerSizingConfig, calculateTransformerSizingResults, transformer
 import { loadScheduleConfig, calculateLoadSchedule, loadScheduleDefaults, loadScheduleRelated } from './loadSchedule';
 
 import { essentialCalculatorRegistry } from './essentialCalculators';
+import { additionalCalculatorRegistry } from './additionalCalculators';
 
 // Calculator registry
 export const calculatorRegistry = {
   ...essentialCalculatorRegistry,
+  ...additionalCalculatorRegistry,
   'duct-sizing': {
     config: ductSizingConfig,
     calculate: calculateDuctSizing,
