@@ -2,8 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useLanguage } from '../components/i18n/LanguageContext';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { localConverterCards, localDimensions, localUnits } from '../components/converters/localCatalog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -55,23 +54,11 @@ export default function UnitConverterHub() {
   const params = new URLSearchParams(window.location.search);
   const lang = params.get('lang') || language;
 
-  // Fetch data from database
-  const { data: converterCards = [], isLoading: loadingCards } = useQuery({
-    queryKey: ['converterCards'],
-    queryFn: () => base44.entities.ConverterCard.list(),
-  });
-
-  const { data: dimensions = [], isLoading: loadingDimensions } = useQuery({
-    queryKey: ['unitDimensions'],
-    queryFn: () => base44.entities.UnitDimension.list(),
-  });
-
-  const { data: units = [], isLoading: loadingUnits } = useQuery({
-    queryKey: ['units'],
-    queryFn: () => base44.entities.Unit.list(),
-  });
-
-  const isLoading = loadingCards || loadingDimensions || loadingUnits;
+  // Always available, even when the external Base44 API is unavailable.
+  const converterCards = localConverterCards;
+  const dimensions = localDimensions;
+  const units = localUnits;
+  const isLoading = false;
 
   // Group cards by dimension
   const cardsByDimension = useMemo(() => {
@@ -101,8 +88,8 @@ export default function UnitConverterHub() {
       filtered = filtered.filter(card => {
         const title = lang === 'ar' ? card.titleAr : card.titleEn;
         const keywords = lang === 'ar' ? card.keywordsAr : card.keywordsEn;
-        return title.toLowerCase().includes(query) || 
-               (keywords && keywords.toLowerCase().includes(query));
+        return (title || '').toLowerCase().includes(query) ||
+               (keywords || '').toLowerCase().includes(query);
       });
     }
 
@@ -206,11 +193,11 @@ export default function UnitConverterHub() {
                   {lang === 'ar' ? 'الكل' : 'All'}
                   <Badge variant="secondary" className="ml-2">{converterCards.length}</Badge>
                 </TabsTrigger>
-                {dimensions
+                {[...dimensions, {key:'electrical', nameEn:'Electrical', nameAr:'الكهرباء', displayOrder:10}]
                   .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
                   .map(dim => {
                     const Icon = categoryIcons[dim.key];
-                    const count = cardsByDimension[dim.key]?.length || 0;
+                    const count = converterCards.filter(card => card.dimensionKey === dim.key).length;
                     return (
                       <TabsTrigger key={dim.key} value={dim.key} className="px-4 py-2">
                         {Icon && <Icon className="w-4 h-4 mr-2" />}
