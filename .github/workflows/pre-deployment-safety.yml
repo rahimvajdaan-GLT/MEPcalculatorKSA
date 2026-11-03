@@ -30,5 +30,6 @@ jobs:
         run: |
           node agent/calculation-regression.mjs
           node --test tests/voltage-drop.test.mjs
+          node --test tests/essential-calculators.test.mjs
       - name: Build production bundle
         run: npm run build
