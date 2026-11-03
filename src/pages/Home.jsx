@@ -1,4 +1,4 @@
-import { getCalculatorConfig } from '../components/calculators/engines';
+import { getCalculatorConfig, calculatorRegistry } from '../components/calculators/engines';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -28,10 +28,11 @@ const tradeColors = {
   electrical: { bg: 'from-amber-500 to-yellow-500', light: 'bg-amber-100', text: 'text-amber-600' }
 };
 
-const hvacCalculators = ['duct-sizing', 'chilled-water-pipe-sizing', 'pump-head-loss', 'fan-esp'];
-const plumbingCalculators = ['water-supply-sizing', 'drainage-sizing', 'tank-sizing-refill-time', 'water-heater-sizing'];
-const firefightingCalculators = ['hazen-williams-friction-loss', 'fire-pump-sizing'];
-const electricalCalculators = ['voltage-drop', 'cable-sizing', 'breaker-sizing', 'conduit-trunking-fill', 'short-circuit-level', 'transformer-sizing', 'load-schedule-summary'];
+const calculatorsFor = trade => Object.keys(calculatorRegistry).filter(slug => calculatorRegistry[slug].trade === trade);
+const hvacCalculators = calculatorsFor('hvac');
+const plumbingCalculators = calculatorsFor('plumbing');
+const firefightingCalculators = calculatorsFor('firefighting');
+const electricalCalculators = calculatorsFor('electrical');
 
 export default function Home() {
   const { language, isRTL, t, switchLanguage } = useLanguage();
