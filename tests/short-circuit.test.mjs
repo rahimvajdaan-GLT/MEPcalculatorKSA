@@ -80,3 +80,29 @@ test('inactive downstream inputs do not affect the terminal calculation', () => 
     ...base, includeDownstream: false, cableLength_m: 100, cableImpedance_mOhm: 0.2
   }), calculate(base));
 });
+
+test('downstream reference: 1000 kVA 400 V 6%, 10 m at 1 mΩ/m', () => {
+  const result = calculate({ ...base, includeDownstream: true,
+    cableLength_m: 10, cableImpedance_mOhm: 1 });
+  // Independent scalar reference: Ztr = 9.6 mΩ; Zc = 10 mΩ;
+  // I = 400 / (sqrt(3) * 0.0196) = 11.78 kA.
+  assert.equal(result.outputs.faultCurrent_downstream_kA, 11.78);
+  assert.equal(result.outputs.faultCurrent_transformer_kA, 24.06);
+  assert.deepEqual(result.errors, []);
+  assert.match(result.warnings.join(' '), /IEC 60909/);
+});
+
+test('downstream reference: 500 kVA 400 V 4%, 10 m at 1 mΩ/m', () => {
+  const result = calculate({ transformer_kVA: 500, voltage_V: 400,
+    impedance_percent: 4, includeDownstream: true,
+    cableLength_m: 10, cableImpedance_mOhm: 1 });
+  // Ztr = 12.8 mΩ; Zc = 10 mΩ; I = 400/(sqrt(3)*0.0228) = 10.13 kA.
+  assert.equal(result.outputs.faultCurrent_downstream_kA, 10.13);
+  assert.deepEqual(result.errors, []);
+});
+
+test('downstream unit mode does not change fixed SI input units', () => {
+  const input = { ...base, includeDownstream: true,
+    cableLength_m: 10, cableImpedance_mOhm: 1 };
+  assert.deepEqual(calculate(input, 'metric'), calculate(input, 'imperial'));
+});
