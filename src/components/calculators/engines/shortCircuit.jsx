@@ -7,7 +7,7 @@ export const shortCircuitConfig = {
   version: "2.0",
   ar: {
     title: "حاسبة مستوى القصر (مبسطة)",
-    description: "حساب تيار القصر المتوقع عند أطراف المحول للمشاريع السعودية",
+    description: "تقدير مبسط لتيار قصر ثلاثي الأطوار؛ ليس دراسة IEC 60909 ولا يُستخدم لاختيار أجهزة الحماية",
     inputs: {
       transformer_kVA: { label: "قدرة المحول", unit: { metric: "kVA", imperial: "kVA" } },
       voltage_V: { label: "الجهد", unit: { metric: "V", imperial: "V" } },
@@ -24,7 +24,7 @@ export const shortCircuitConfig = {
   },
   en: {
     title: "Short Circuit Level Calculator (Basic)",
-    description: "Calculate prospective short circuit current at transformer terminals for Saudi projects",
+    description: "Simplified balanced three-phase fault estimate only; not an IEC 60909 study or suitable for protective-device selection",
     inputs: {
       transformer_kVA: { label: "Transformer Rating", unit: { metric: "kVA", imperial: "kVA" } },
       voltage_V: { label: "Voltage", unit: { metric: "V", imperial: "V" } },
@@ -88,7 +88,9 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
     // Downstream calculation (simplified)
     if (includeDownstream && cableLength_m > 0) {
       // Calculate transformer impedance in mOhms
-      const transformer_Z_mOhm = safeDivide((voltage_V * voltage_V * impedance_percent), (transformer_kVA * 10), 0);
+      // V_LL² / (S_kVA × 1000) × (z% / 100) × 1000 mΩ/Ω
+      // = V_LL² × z% / (S_kVA × 100), for a three-phase transformer.
+      const transformer_Z_mOhm = safeDivide((voltage_V * voltage_V * impedance_percent), (transformer_kVA * 100), 0);
       
       // Total cable impedance
       const cable_Z_mOhm = cableImpedance_mOhm * cableLength_m;
@@ -102,7 +104,7 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
       
       outputs.faultCurrent_downstream_kA = round(faultCurrent_downstream_kA, 2);
       
-      warnings.push('Downstream fault level is approximate - full study recommended');
+      warnings.push('Downstream estimate assumes balanced three-phase fault and scalar per-phase cable impedance in mΩ/m; it does not model R+jX, source impedance, motor contribution, or IEC 60909 factors. Do not use for protection selection without a full study.');
     }
 
     // Warnings
