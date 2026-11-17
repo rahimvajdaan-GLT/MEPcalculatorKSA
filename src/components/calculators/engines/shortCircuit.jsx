@@ -135,9 +135,8 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
       
       outputs.faultCurrent_downstream_kA = round(faultCurrent_downstream_kA, 2);
       
-      warnings.push(unitsMode === 'ar'
-        ? 'التقدير اللاحق مبسط لقصر ثلاثي الأطوار ويجمع معاوقة الكابل لكل طور بوحدة ملي أوم/متر جمعاً عددياً؛ لا يشمل المركبات R+jX أو معاوقة المصدر أو مساهمة المحركات أو معاملات IEC 60909. لا يُستخدم لاختيار أجهزة الحماية دون دراسة تفصيلية.'
-        : 'Downstream estimate assumes balanced three-phase fault and scalar per-phase cable impedance in mΩ/m; it does not model R+jX, source impedance, motor contribution, or IEC 60909 factors. Do not use for protection selection without a full study.');
+      warnings.push('Downstream estimate assumes balanced three-phase fault and scalar per-phase cable impedance in mΩ/m; it does not model R+jX, source impedance, motor contribution, or IEC 60909 factors. Do not use for protection selection without a full study.');
+      warnings.push('التقدير اللاحق مبسط لقصر ثلاثي الأطوار ويجمع معاوقة الكابل لكل طور بوحدة ملي أوم/متر جمعاً عددياً؛ لا يشمل المركبات R+jX أو معاوقة المصدر أو مساهمة المحركات أو معاملات IEC 60909. لا يُستخدم لاختيار أجهزة الحماية دون دراسة تفصيلية.');
     }
 
     // Warnings
