@@ -70,6 +70,37 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
   const validationErrors = validateInputs(validations);
   errors.push(...validationErrors);
 
+  // Local finite-positive guards: do not change validators shared by other tools.
+  // Check parsed values AND raw input to prevent parseNumber fallbacks hiding NaN.
+  const positiveInputs = [
+    ['Transformer kVA', inputs.transformer_kVA, transformer_kVA],
+    ['Voltage', inputs.voltage_V ?? KSA_DEFAULTS.voltage_3P, voltage_V],
+    ['Impedance %', inputs.impedance_percent, impedance_percent]
+  ];
+  if (includeDownstream) {
+    positiveInputs.push(
+      ['Cable Length', inputs.cableLength_m, cableLength_m],
+      ['Cable Impedance', inputs.cableImpedance_mOhm, cableImpedance_mOhm]
+    );
+  }
+  for (const [name, raw, parsed] of positiveInputs) {
+    const rawNumber = typeof raw === 'string'
+      ? Number(raw.replace(/,/g, '').trim()) : Number(raw);
+    if (!Number.isFinite(rawNumber) || !Number.isFinite(parsed) ||
+        rawNumber <= 0 || parsed <= 0) {
+      if (!errors.some(error => String(error).includes(name))) {
+        errors.push(`${name} must be a finite positive number`);
+      }
+    }
+  }
+  // Reject arithmetic overflow before displaying potentially misleading results.
+  if (errors.length === 0 &&
+      (!Number.isFinite(transformer_kVA * 1000) ||
+       !Number.isFinite(voltage_V * voltage_V * impedance_percent) ||
+       (includeDownstream && !Number.isFinite(cableLength_m * cableImpedance_mOhm)))) {
+    errors.push('Input magnitude exceeds supported calculation range');
+  }
+
   let outputs = {};
 
   if (errors.length === 0) {
@@ -86,7 +117,7 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
     };
 
     // Downstream calculation (simplified)
-    if (includeDownstream && cableLength_m > 0) {
+    if (includeDownstream) {
       // Calculate transformer impedance in mOhms
       // V_LL² / (S_kVA × 1000) × (z% / 100) × 1000 mΩ/Ω
       // = V_LL² × z% / (S_kVA × 100), for a three-phase transformer.
@@ -104,7 +135,9 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
       
       outputs.faultCurrent_downstream_kA = round(faultCurrent_downstream_kA, 2);
       
-      warnings.push('Downstream estimate assumes balanced three-phase fault and scalar per-phase cable impedance in mΩ/m; it does not model R+jX, source impedance, motor contribution, or IEC 60909 factors. Do not use for protection selection without a full study.');
+      warnings.push(unitsMode === 'ar'
+        ? 'التقدير اللاحق مبسط لقصر ثلاثي الأطوار ويجمع معاوقة الكابل لكل طور بوحدة ملي أوم/متر جمعاً عددياً؛ لا يشمل المركبات R+jX أو معاوقة المصدر أو مساهمة المحركات أو معاملات IEC 60909. لا يُستخدم لاختيار أجهزة الحماية دون دراسة تفصيلية.'
+        : 'Downstream estimate assumes balanced three-phase fault and scalar per-phase cable impedance in mΩ/m; it does not model R+jX, source impedance, motor contribution, or IEC 60909 factors. Do not use for protection selection without a full study.');
     }
 
     // Warnings
