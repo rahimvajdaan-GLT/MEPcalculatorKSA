@@ -106,3 +106,42 @@ test('downstream unit mode does not change fixed SI input units', () => {
     cableLength_m: 10, cableImpedance_mOhm: 1 };
   assert.deepEqual(calculate(input, 'metric'), calculate(input, 'imperial'));
 });
+
+test('invalid transformer and cable inputs return no fault-current outputs', () => {
+  const invalids = [
+    { transformer_kVA: -100 }, { transformer_kVA: Infinity },
+    { transformer_kVA: NaN }, { transformer_kVA: 'Infinity' },
+    { voltage_V: -400 }, { voltage_V: Infinity }, { voltage_V: NaN },
+    { impedance_percent: NaN }, { impedance_percent: Infinity },
+    { impedance_percent: -6 }, { transformer_kVA: 1e308 }
+  ];
+  for (const invalid of invalids) {
+    const result = calculate({ ...base, ...invalid });
+    assert.ok(result.errors.length > 0, JSON.stringify(invalid));
+    assert.equal(result.outputs.faultCurrent_transformer_kA, 0);
+  }
+  for (const invalid of [
+    { cableLength_m: -1 }, { cableLength_m: 0 },
+    { cableLength_m: NaN }, { cableLength_m: Infinity },
+    { cableImpedance_mOhm: -1 }, { cableImpedance_mOhm: 0 },
+    { cableImpedance_mOhm: NaN }, { cableImpedance_mOhm: Infinity }
+  ]) {
+    const result = calculate({ ...base, includeDownstream: true,
+      cableLength_m: 10, cableImpedance_mOhm: 1, ...invalid });
+    assert.ok(result.errors.length > 0, JSON.stringify(invalid));
+    assert.equal(result.outputs.faultCurrent_downstream_kA, 0);
+  }
+});
+
+test('downstream warning includes English and Arabic safety limitations', () => {
+  const result = calculate({ ...base, includeDownstream: true,
+    cableLength_m: 10, cableImpedance_mOhm: 1 });
+  assert.deepEqual(result.errors, []);
+  assert.match(result.warnings.join(' '), /IEC 60909/);
+  assert.match(result.warnings.join(' '), /[\u0600-\u06FF]/);
+});
+
+test('disabled downstream mode ignores invalid cable fields', () => {
+  assert.deepEqual(calculate({ ...base, includeDownstream: false,
+    cableLength_m: -10, cableImpedance_mOhm: Infinity }), calculate(base));
+});
