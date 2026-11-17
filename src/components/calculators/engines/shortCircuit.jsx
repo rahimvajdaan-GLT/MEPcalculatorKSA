@@ -96,6 +96,7 @@ export function calculateShortCircuitResults(inputs, unitsMode = 'metric') {
   // Reject arithmetic overflow before displaying potentially misleading results.
   if (errors.length === 0 &&
       (!Number.isFinite(transformer_kVA * 1000) ||
+       !Number.isFinite((transformer_kVA * 1000) / (Math.sqrt(3) * voltage_V) * (100 / impedance_percent)) ||
        !Number.isFinite(voltage_V * voltage_V * impedance_percent) ||
        (includeDownstream && !Number.isFinite(cableLength_m * cableImpedance_mOhm)))) {
     errors.push('Input magnitude exceeds supported calculation range');
