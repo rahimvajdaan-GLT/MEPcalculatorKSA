@@ -5,17 +5,26 @@ export function convertUnits(value, fromUnit, toUnit) {
     return null;
   }
 
+  // Reject malformed and non-finite input rather than displaying NaN/Infinity.
+  // Zero and negative values remain valid for affine conversions (e.g. Celsius).
+  if (typeof value !== 'number' || !Number.isFinite(value) ||
+      !Number.isFinite(fromUnit.factorToBase) || fromUnit.factorToBase === 0 ||
+      !Number.isFinite(toUnit.factorToBase) || toUnit.factorToBase === 0 ||
+      !Number.isFinite(fromUnit.offsetToBase) || !Number.isFinite(toUnit.offsetToBase)) {
+    return null;
+  }
+
   // Convert to base unit
   const baseValue = (value * fromUnit.factorToBase) + fromUnit.offsetToBase;
 
   // Convert from base to target unit
   const result = (baseValue - toUnit.offsetToBase) / toUnit.factorToBase;
 
-  return result;
+  return Number.isFinite(result) ? result : null;
 }
 
 export function formatConversionResult(value, dimensionKey, unitSymbol) {
-  if (value === null || value === undefined || isNaN(value)) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
     return '-';
   }
 
