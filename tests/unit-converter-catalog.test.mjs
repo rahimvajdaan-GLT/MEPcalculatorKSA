@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 const folder=mkdtempSync(join(tmpdir(),'mep-converter-'));
 const outfile=join(folder,'engine.mjs');
 await build({entryPoints:['src/components/converters/ConversionEngine.jsx'],bundle:true,platform:'node',format:'esm',outfile,logLevel:'silent'});
-const {convertUnits}=await import(pathToFileURL(outfile).href);
+const {convertUnits,formatConversionResult}=await import(pathToFileURL(outfile).href);
 process.on('exit',()=>rmSync(folder,{recursive:true,force:true}));
 const unit=(dim,key)=>localUnits.find(u=>u.dimensionKey===dim&&u.key===key);
 const convert=(dim,a,b,value)=>convertUnits(value,unit(dim,a),unit(dim,b));
@@ -48,4 +48,26 @@ test('round-trip all local converters',()=>{
   const after=convert(dim,from,to,23.45);
   near(convert(dim,to,from,after),23.45,0.00001);
  }
+});
+
+test('invalid and nonfinite values never become valid conversion output',()=>{
+ const from=unit('pressure','bar'),to=unit('pressure','psi');
+ for(const invalid of [NaN,Infinity,-Infinity,'abc',null,undefined]){
+  assert.equal(convertUnits(invalid,from,to),null);
+ }
+ assert.equal(convertUnits(Number.MAX_VALUE,unit('length','m'),unit('length','mm')),null);
+ assert.equal(convertUnits(1,from,{...to,factorToBase:0}),null);
+ assert.equal(convertUnits(1,from,{...to,factorToBase:Infinity}),null);
+ assert.equal(convertUnits(1,from,unit('length','m')),null);
+ for(const invalid of [NaN,Infinity,-Infinity,'abc',null,undefined]){
+  assert.equal(formatConversionResult(invalid,'pressure','psi'),'-');
+ }
+});
+
+test('zero, signed Celsius and negative algebraic values retain defined behavior',()=>{
+ near(convert('temperature','c','f',0),32);
+ near(convert('temperature','c','f',-40),-40);
+ near(convert('temperature','f','c',32),0);
+ near(convert('pressure','bar','psi',0),0);
+ near(convert('pressure','bar','psi',-1),-14.5037738,0.00001);
 });
