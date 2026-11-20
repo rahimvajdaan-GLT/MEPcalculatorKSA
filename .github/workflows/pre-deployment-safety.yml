@@ -32,6 +32,7 @@ jobs:
           node --test tests/voltage-drop.test.mjs
           node --test tests/essential-calculators.test.mjs
           node --test tests/additional-calculators.test.mjs
-          node --test tests/unit-converter-catalog.test.mjs
+      - name: Run UnitConverterHub conversion regression tests
+        run: node --test tests/unit-converter-catalog.test.mjs
       - name: Build production bundle
         run: npm run build
