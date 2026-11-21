@@ -254,8 +254,11 @@ export default function UnitConverterHub() {
                   >
                     <Card className="h-full group hover:shadow-xl transition-all duration-300 border-slate-200 hover:border-emerald-300">
                       <CardContent className="p-5">
-                        <div 
-                          className="flex items-start gap-3 mb-3 cursor-pointer"
+                        <button
+                          type="button"
+                          className="flex w-full items-start gap-3 mb-3 cursor-pointer text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 rounded-lg"
+                          aria-expanded={expandedCard === card.id}
+                          aria-controls={`converter-panel-${card.id}`}
                           onClick={() => setExpandedCard(expandedCard === card.id ? null : card.id)}
                         >
                           <div className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center flex-shrink-0`}>
@@ -268,11 +271,12 @@ export default function UnitConverterHub() {
                             {desc && (
                               <p className="text-xs text-slate-500">{desc}</p>
                             )}
-                          </div>
+                          </button>
                         </div>
                         
                         {expandedCard === card.id && (
                           <motion.div
+                            id={`converter-panel-${card.id}`}
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
