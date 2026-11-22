@@ -31,8 +31,8 @@ export default function ConverterInlinePanel({ card, units, language }) {
   }, [fromValue, fromUnitKey, toUnitKey, autoConvert]);
 
   const handleConvert = () => {
-    const value = parseFloat(fromValue);
-    if (isNaN(value) || !fromUnit || !toUnit) {
+    const value = Number(fromValue);
+    if (!fromValue.trim() || !Number.isFinite(value) || !fromUnit || !toUnit) {
       setToValue('');
       return;
     }
@@ -41,6 +41,8 @@ export default function ConverterInlinePanel({ card, units, language }) {
     if (result !== null) {
       const formatted = formatConversionResult(result, card.dimensionKey, toUnit.symbol);
       setToValue(formatted);
+    } else {
+      setToValue('');
     }
   };
 
