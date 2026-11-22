@@ -25,7 +25,7 @@ export default function ConverterInlinePanel({ card, units, language }) {
   const title = language === 'ar' ? card.titleAr : card.titleEn;
 
   useEffect(() => {
-    if (autoConvert && fromValue && fromUnit && toUnit) {
+    if (autoConvert) {
       handleConvert();
     }
   }, [fromValue, fromUnitKey, toUnitKey, autoConvert]);
