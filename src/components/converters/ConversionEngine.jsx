@@ -1,21 +1,27 @@
 // General unit conversion engine
 
 export function convertUnits(value, fromUnit, toUnit) {
-  if (!fromUnit || !toUnit || fromUnit.dimensionKey !== toUnit.dimensionKey) {
+  if (typeof value !== 'number' || !Number.isFinite(value) ||
+      !fromUnit || !toUnit || fromUnit.dimensionKey !== toUnit.dimensionKey ||
+      !Number.isFinite(fromUnit.factorToBase) || fromUnit.factorToBase === 0 ||
+      !Number.isFinite(toUnit.factorToBase) || toUnit.factorToBase === 0 ||
+      !Number.isFinite(fromUnit.offsetToBase) || !Number.isFinite(toUnit.offsetToBase)) {
     return null;
   }
 
   // Convert to base unit
   const baseValue = (value * fromUnit.factorToBase) + fromUnit.offsetToBase;
 
+  if (!Number.isFinite(baseValue)) return null;
+
   // Convert from base to target unit
   const result = (baseValue - toUnit.offsetToBase) / toUnit.factorToBase;
 
-  return result;
+  return Number.isFinite(result) ? result : null;
 }
 
 export function formatConversionResult(value, dimensionKey, unitSymbol) {
-  if (value === null || value === undefined || isNaN(value)) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
     return '-';
   }
 
