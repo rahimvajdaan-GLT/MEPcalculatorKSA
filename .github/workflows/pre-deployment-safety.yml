@@ -33,6 +33,8 @@ jobs:
           node --test tests/essential-calculators.test.mjs
           node --test tests/additional-calculators.test.mjs
           node --test tests/unit-converter-catalog.test.mjs
+      - name: Run UnitConverterHub recovery regression tests
+        run: node --test tests/unit-converter-recovery.test.mjs
       - name: Run short-circuit engineering boundary tests
         run: node --test tests/short-circuit.test.mjs
       - name: Build production bundle
