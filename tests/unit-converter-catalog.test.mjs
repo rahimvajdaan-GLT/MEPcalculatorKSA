@@ -10,7 +10,15 @@ import { pathToFileURL } from 'node:url';
 const folder=mkdtempSync(join(tmpdir(),'mep-converter-'));
 const outfile=join(folder,'engine.mjs');
 await build({entryPoints:['src/components/converters/ConversionEngine.jsx'],bundle:true,platform:'node',format:'esm',outfile,logLevel:'silent'});
-const {convertUnits}=await import(pathToFileURL(outfile).href);
+const {
+ convertUnits,
+ convertKWtoA,
+ convertAtoKW,
+ convertKVAtoA,
+ convertAtoKVA,
+ convertKWtoKVA,
+ convertKVAtoKW,
+}=await import(pathToFileURL(outfile).href);
 process.on('exit',()=>rmSync(folder,{recursive:true,force:true}));
 const unit=(dim,key)=>localUnits.find(u=>u.dimensionKey===dim&&u.key===key);
 const convert=(dim,a,b,value)=>convertUnits(value,unit(dim,a),unit(dim,b));
@@ -48,4 +56,28 @@ test('round-trip all local converters',()=>{
   const after=convert(dim,from,to,23.45);
   near(convert(dim,to,from,after),23.45,0.00001);
  }
+});
+
+test('single-phase electrical conversions at 230 V and 0.8 power factor', () => {
+ // 10 A at 230 V gives 2300 VA. Four fifths of that is 1840 W.
+ near(convertKWtoA(1.84, 230, 0.8, '1P'), 10, 1e-9);
+ near(convertAtoKW(10, 230, 0.8, '1P'), 1.84, 1e-9);
+ near(convertKVAtoA(2.3, 230, '1P'), 10, 1e-9);
+ near(convertAtoKVA(10, 230, '1P'), 2.3, 1e-9);
+});
+
+test('balanced three-phase conversions at 400 V line-to-line', () => {
+ // At 20 A, each phase contributes 4.6188021535 kVA using
+ // 230.9401076759 V line-to-neutral. Total real power is 90% of 13.8564064606 kVA.
+ near(convertKWtoA(12.4707658145, 400, 0.9, '3P'), 20, 1e-9);
+ near(convertAtoKW(20, 400, 0.9, '3P'), 12.4707658145, 1e-9);
+ near(convertKVAtoA(13.8564064606, 400, '3P'), 20, 1e-9);
+ near(convertAtoKVA(20, 400, '3P'), 13.8564064606, 1e-9);
+});
+
+test('real and apparent power at partial and unity power factor', () => {
+ near(convertKWtoKVA(6, 0.75), 8, 1e-9);
+ near(convertKVAtoKW(8, 0.75), 6, 1e-9);
+ assert.equal(convertKWtoKVA(8, 1), 8);
+ assert.equal(convertKVAtoKW(8, 1), 8);
 });
