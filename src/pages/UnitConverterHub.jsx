@@ -274,9 +274,12 @@ export default function UnitConverterHub() {
                           </div>
                         </button>
 
+                        <div
+                          id={`converter-panel-${card.id}`}
+                          hidden={expandedCard !== card.id}
+                        >
                         {expandedCard === card.id && (
                           <motion.div
-                            id={`converter-panel-${card.id}`}
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
@@ -290,6 +293,7 @@ export default function UnitConverterHub() {
                             )}
                           </motion.div>
                         )}
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>
