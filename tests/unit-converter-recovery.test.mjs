@@ -19,8 +19,11 @@ test('UnitConverterHub and panel JSX parse successfully (catches mismatched clos
 test('converter disclosure uses native button and associated panel', () => {
   assert.match(source, /<button\s+type="button"[\s\S]*?aria-expanded=\{expandedCard === card\.id\}/);
   assert.match(source, /aria-controls=\{\x60converter-panel-\$\{card\.id\}\x60\}/);
-  assert.match(source, /<motion\.div\s+id=\{\x60converter-panel-\$\{card\.id\}\x60\}/);
+  assert.match(source, /<div\s+id=\{\x60converter-panel-\$\{card\.id\}\x60\}/);
   assert.match(source, /focus-visible:ring-2/);
+  assert.match(source, /hidden=\{expandedCard !== card\.id\}/);
+  assert.match(panel, /htmlFor=\{\x60converter-input-\$\{card\.id\}\x60\}/);
+  assert.match(panel, /id=\{\x60converter-input-\$\{card\.id\}\x60\}/);
 });
 
 test('inline panel rejects malformed numeric input rather than parseFloat prefix', () => {
