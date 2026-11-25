@@ -83,17 +83,18 @@ export default function ConverterInlinePanel({ card, units, language }) {
         <div className="space-y-4">
           {/* From */}
           <div className="space-y-2">
-            <Label>{language === 'ar' ? 'من' : 'From'}</Label>
-            <div className="flex gap-2">
+            <Label htmlFor={`converter-input-${card.id}`}>{language === 'ar' ? 'من' : 'From'}</Label>
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
+                id={`converter-input-${card.id}`}
                 type="number"
                 value={fromValue}
                 onChange={(e) => setFromValue(e.target.value)}
                 placeholder={language === 'ar' ? 'أدخل القيمة' : 'Enter value'}
-                className="flex-1"
+                className="flex-1 min-w-0"
               />
               <Select value={fromUnitKey} onValueChange={setFromUnitKey}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,8 +123,8 @@ export default function ConverterInlinePanel({ card, units, language }) {
           {/* To */}
           <div className="space-y-2">
             <Label>{language === 'ar' ? 'إلى' : 'To'}</Label>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1 min-w-0 relative">
                 <Input
                   type="text"
                   value={toValue}
@@ -147,7 +148,7 @@ export default function ConverterInlinePanel({ card, units, language }) {
                 )}
               </div>
               <Select value={toUnitKey} onValueChange={setToUnitKey}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
