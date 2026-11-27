@@ -39,43 +39,40 @@ export function formatConversionResult(value, dimensionKey, unitSymbol) {
   return value.toFixed(decimals);
 }
 
-// Electrical conversions (mini calculators)
+// Balanced AC RMS load magnitudes; voltage is line-to-line for 3P.
+// Zero load is valid; negative loads (export/generation) are outside this model.
+// Invalid or nonrepresentable results return null, never a plausible number.
+const validMagnitude = n => Number.isFinite(n) && n >= 0;
+const validVoltage = n => Number.isFinite(n) && n > 0;
+const validPF = n => Number.isFinite(n) && n > 0 && n <= 1;
+const validSystem = s => s === '1P' || s === '3P';
+const safeResult = n => Number.isFinite(n) ? n : null;
 export function convertKWtoA(kW, voltage, pf, system) {
-  if (system === '3P') {
-    return (kW * 1000) / (Math.sqrt(3) * voltage * pf);
-  } else {
-    return (kW * 1000) / (voltage * pf);
-  }
+  if (!(validMagnitude(kW) && validVoltage(voltage) && validPF(pf) && validSystem(system))) return null;
+  return safeResult((kW * 1000) / ((system === '3P' ? Math.sqrt(3) : 1) * voltage * pf));
 }
 
 export function convertAtoKW(current, voltage, pf, system) {
-  if (system === '3P') {
-    return (Math.sqrt(3) * voltage * current * pf) / 1000;
-  } else {
-    return (voltage * current * pf) / 1000;
-  }
+  if (!(validMagnitude(current) && validVoltage(voltage) && validPF(pf) && validSystem(system))) return null;
+  return safeResult(((system === '3P' ? Math.sqrt(3) : 1) * voltage * current * pf) / 1000);
 }
 
 export function convertKVAtoA(kVA, voltage, system) {
-  if (system === '3P') {
-    return (kVA * 1000) / (Math.sqrt(3) * voltage);
-  } else {
-    return (kVA * 1000) / voltage;
-  }
+  if (!(validMagnitude(kVA) && validVoltage(voltage) && validSystem(system))) return null;
+  return safeResult((kVA * 1000) / ((system === '3P' ? Math.sqrt(3) : 1) * voltage));
 }
 
 export function convertAtoKVA(current, voltage, system) {
-  if (system === '3P') {
-    return (Math.sqrt(3) * voltage * current) / 1000;
-  } else {
-    return (voltage * current) / 1000;
-  }
+  if (!(validMagnitude(current) && validVoltage(voltage) && validSystem(system))) return null;
+  return safeResult(((system === '3P' ? Math.sqrt(3) : 1) * voltage * current) / 1000);
 }
 
 export function convertKWtoKVA(kW, pf) {
-  return kW / pf;
+  if (!(validMagnitude(kW) && validPF(pf))) return null;
+  return safeResult(kW / pf);
 }
 
 export function convertKVAtoKW(kVA, pf) {
-  return kVA * pf;
+  if (!(validMagnitude(kVA) && validPF(pf))) return null;
+  return safeResult(kVA * pf);
 }
