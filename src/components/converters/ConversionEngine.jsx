@@ -46,33 +46,53 @@ const validMagnitude = n => Number.isFinite(n) && n >= 0;
 const validVoltage = n => Number.isFinite(n) && n > 0;
 const validPF = n => Number.isFinite(n) && n > 0 && n <= 1;
 const validSystem = s => s === '1P' || s === '3P';
-const safeResult = n => Number.isFinite(n) ? n : null;
+// Reject overflow/underflow in intermediate arithmetic as well as final output.
+// Conservative IEEE-754 policy: extreme inputs may be rejected even if a
+// rearranged expression could produce a representable result.
+const safeResult = (n, load) => Number.isFinite(n) && (load === 0 || n > 0) ? n : null;
+const phaseFactor = system => system === '3P' ? Math.sqrt(3) : 1;
+function powerToCurrent(load, voltage, pf, system) {
+  if (load === 0) return 0;
+  const numerator = load * 1000;
+  const phaseVoltage = phaseFactor(system) * voltage;
+  const denominator = phaseVoltage * pf;
+  if (![numerator, phaseVoltage, denominator].every(n => Number.isFinite(n) && n > 0)) return null;
+  return safeResult(numerator / denominator, load);
+}
+function currentToPower(load, voltage, pf, system) {
+  if (load === 0) return 0;
+  const phaseVoltage = phaseFactor(system) * voltage;
+  const apparent = phaseVoltage * load;
+  const active = apparent * pf;
+  if (![phaseVoltage, apparent, active].every(n => Number.isFinite(n) && n > 0)) return null;
+  return safeResult(active / 1000, load);
+}
 export function convertKWtoA(kW, voltage, pf, system) {
   if (!(validMagnitude(kW) && validVoltage(voltage) && validPF(pf) && validSystem(system))) return null;
-  return safeResult((kW * 1000) / ((system === '3P' ? Math.sqrt(3) : 1) * voltage * pf));
+  return powerToCurrent(kW, voltage, pf, system);
 }
 
 export function convertAtoKW(current, voltage, pf, system) {
   if (!(validMagnitude(current) && validVoltage(voltage) && validPF(pf) && validSystem(system))) return null;
-  return safeResult(((system === '3P' ? Math.sqrt(3) : 1) * voltage * current * pf) / 1000);
+  return currentToPower(current, voltage, pf, system);
 }
 
 export function convertKVAtoA(kVA, voltage, system) {
   if (!(validMagnitude(kVA) && validVoltage(voltage) && validSystem(system))) return null;
-  return safeResult((kVA * 1000) / ((system === '3P' ? Math.sqrt(3) : 1) * voltage));
+  return powerToCurrent(kVA, voltage, 1, system);
 }
 
 export function convertAtoKVA(current, voltage, system) {
   if (!(validMagnitude(current) && validVoltage(voltage) && validSystem(system))) return null;
-  return safeResult(((system === '3P' ? Math.sqrt(3) : 1) * voltage * current) / 1000);
+  return currentToPower(current, voltage, 1, system);
 }
 
 export function convertKWtoKVA(kW, pf) {
   if (!(validMagnitude(kW) && validPF(pf))) return null;
-  return safeResult(kW / pf);
+  return safeResult(kW / pf, kW);
 }
 
 export function convertKVAtoKW(kVA, pf) {
   if (!(validMagnitude(kVA) && validPF(pf))) return null;
-  return safeResult(kVA * pf);
+  return safeResult(kVA * pf, kVA);
 }
