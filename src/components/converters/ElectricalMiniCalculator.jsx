@@ -17,6 +17,7 @@ export default function ElectricalMiniCalculator({ card, language }) {
   const [system, setSystem] = useState('3P');
   const [autoConvert, setAutoConvert] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(false);
 
   const title = language === 'ar' ? card.titleAr : card.titleEn;
 
@@ -27,53 +28,28 @@ export default function ElectricalMiniCalculator({ card, language }) {
   const needsVoltage = conversionType !== 'kw-to-kva' && conversionType !== 'kva-to-kw';
 
   useEffect(() => {
-    if (autoConvert && fromValue) {
-      handleConvert();
-    }
-  }, [fromValue, voltage, pf, system, autoConvert]);
+    setToValue('');
+    setError(false);
+    if (autoConvert && fromValue.trim() !== '') handleConvert();
+  }, [fromValue, voltage, pf, system, autoConvert, conversionType]);
 
   const handleConvert = () => {
-    const value = parseFloat(fromValue);
-    const v = parseFloat(voltage);
-    const powerFactor = parseFloat(pf);
-
-    if (isNaN(value)) {
-      setToValue('');
-      return;
-    }
-
-    let result;
-
+    const number = raw => raw.trim() === '' ? NaN : Number(raw);
+    const value = number(fromValue);
+    const v = number(voltage);
+    const powerFactor = number(pf);
+    let result = null;
     switch (conversionType) {
-      case 'kw-to-a':
-        if (isNaN(v) || isNaN(powerFactor)) return;
-        result = convertKWtoA(value, v, powerFactor, system);
-        break;
-      case 'a-to-kw':
-        if (isNaN(v) || isNaN(powerFactor)) return;
-        result = convertAtoKW(value, v, powerFactor, system);
-        break;
-      case 'kva-to-a':
-        if (isNaN(v)) return;
-        result = convertKVAtoA(value, v, system);
-        break;
-      case 'a-to-kva':
-        if (isNaN(v)) return;
-        result = convertAtoKVA(value, v, system);
-        break;
-      case 'kw-to-kva':
-        if (isNaN(powerFactor)) return;
-        result = convertKWtoKVA(value, powerFactor);
-        break;
-      case 'kva-to-kw':
-        if (isNaN(powerFactor)) return;
-        result = convertKVAtoKW(value, powerFactor);
-        break;
-      default:
-        return;
+      case 'kw-to-a': result = convertKWtoA(value, v, powerFactor, system); break;
+      case 'a-to-kw': result = convertAtoKW(value, v, powerFactor, system); break;
+      case 'kva-to-a': result = convertKVAtoA(value, v, system); break;
+      case 'a-to-kva': result = convertAtoKVA(value, v, system); break;
+      case 'kw-to-kva': result = convertKWtoKVA(value, powerFactor); break;
+      case 'kva-to-kw': result = convertKVAtoKW(value, powerFactor); break;
     }
-
-    setToValue(result.toFixed(2));
+    const valid = Number.isFinite(result);
+    setToValue(valid ? result.toFixed(2) : '');
+    setError(!valid);
   };
 
   const handleSwap = () => {
@@ -177,6 +153,7 @@ export default function ElectricalMiniCalculator({ card, language }) {
             />
           </div>
 
+          {error && <p role="alert" className="text-sm text-red-700">{language === 'ar' ? 'أدخل قيماً صالحة: الحمل غير سالب، والجهد موجب، ومعامل القدرة أكبر من صفر وحتى واحد. يجب أن تكون النتيجة محدودة.' : 'Enter valid values: nonnegative load, positive voltage and power factor greater than zero and at most one. Result must be finite.'}</p>}
           {/* Swap Button */}
           <div className="flex justify-center">
             <Button
