@@ -19,3 +19,25 @@ test("convertKWtoKVA('6',1)", () => { const actual = convertKWtoKVA('6',1); asse
 test("convertAtoKVA(10,230,'1P')", () => { const actual = convertAtoKVA(10,230,'1P'); assert.ok(Number.isFinite(actual) && Math.abs(actual - 2.3) < 1e-10); });
 test("convertKVAtoA(2.3,230,'1P')", () => { const actual = convertKVAtoA(2.3,230,'1P'); assert.ok(Number.isFinite(actual) && Math.abs(actual - 10) < 1e-10); });
 test("convertKVAtoKW(8,.75)", () => { const actual = convertKVAtoKW(8,.75); assert.ok(Number.isFinite(actual) && Math.abs(actual - 6) < 1e-10); });
+
+// IEEE-754 boundary regressions: reject unsafe arithmetic, preserve true zero.
+test("convertKWtoA(1,Number.MAX_VALUE,1,'3P')", () => { assert.equal(convertKWtoA(1,Number.MAX_VALUE,1,'3P'), null); });
+test("convertKVAtoA(1,Number.MAX_VALUE,'3P')", () => { assert.equal(convertKVAtoA(1,Number.MAX_VALUE,'3P'), null); });
+test("convertAtoKW(1,Number.MAX_VALUE,1,'3P')", () => { assert.equal(convertAtoKW(1,Number.MAX_VALUE,1,'3P'), null); });
+test("convertAtoKVA(1,Number.MAX_VALUE,'3P')", () => { assert.equal(convertAtoKVA(1,Number.MAX_VALUE,'3P'), null); });
+test("convertKWtoA(Number.MAX_VALUE,230,1,'1P')", () => { assert.equal(convertKWtoA(Number.MAX_VALUE,230,1,'1P'), null); });
+test("convertKVAtoA(Number.MAX_VALUE,230,'1P')", () => { assert.equal(convertKVAtoA(Number.MAX_VALUE,230,'1P'), null); });
+test("convertAtoKW(Number.MAX_VALUE,230,1,'1P')", () => { assert.equal(convertAtoKW(Number.MAX_VALUE,230,1,'1P'), null); });
+test("convertAtoKVA(Number.MAX_VALUE,230,'1P')", () => { assert.equal(convertAtoKVA(Number.MAX_VALUE,230,'1P'), null); });
+test("convertKWtoA(Number.MIN_VALUE,1e100,1,'1P')", () => { assert.equal(convertKWtoA(Number.MIN_VALUE,1e100,1,'1P'), null); });
+test("convertKVAtoA(Number.MIN_VALUE,1e100,'1P')", () => { assert.equal(convertKVAtoA(Number.MIN_VALUE,1e100,'1P'), null); });
+test("convertAtoKW(Number.MIN_VALUE,1,1,'1P')", () => { assert.equal(convertAtoKW(Number.MIN_VALUE,1,1,'1P'), null); });
+test("convertAtoKVA(Number.MIN_VALUE,1,'1P')", () => { assert.equal(convertAtoKVA(Number.MIN_VALUE,1,'1P'), null); });
+test("convertKVAtoKW(Number.MIN_VALUE,.1)", () => { assert.equal(convertKVAtoKW(Number.MIN_VALUE,.1), null); });
+test("convertKWtoKVA(Number.MAX_VALUE,.5)", () => { assert.equal(convertKWtoKVA(Number.MAX_VALUE,.5), null); });
+test("convertKWtoA(0,Number.MAX_VALUE,1,'3P')", () => { assert.equal(convertKWtoA(0,Number.MAX_VALUE,1,'3P'), 0); });
+test("convertKVAtoA(0,Number.MAX_VALUE,'3P')", () => { assert.equal(convertKVAtoA(0,Number.MAX_VALUE,'3P'), 0); });
+test("convertAtoKW(0,Number.MAX_VALUE,1,'3P')", () => { assert.equal(convertAtoKW(0,Number.MAX_VALUE,1,'3P'), 0); });
+test("convertAtoKVA(0,Number.MAX_VALUE,'3P')", () => { assert.equal(convertAtoKVA(0,Number.MAX_VALUE,'3P'), 0); });
+test("convertKWtoKVA(0,1)", () => { assert.equal(convertKWtoKVA(0,1), 0); });
+test("convertKVAtoKW(0,1)", () => { assert.equal(convertKVAtoKW(0,1), 0); });
